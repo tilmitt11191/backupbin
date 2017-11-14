@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#sudo mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower,uid=ffffe,gid=ffffe,mode=755 //pc/fdrive-work /mnt/fdrive-work
+#sudo mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower,uid=ffffe,gid=ffffe //pc/fdrive-work /mnt/fdrive-work
+sudo mount -t exfat -o uid=ffffe,gid=ffffe /dev/disk/by-id/wwn-0x908982483784060928x-part2 /mnt/fdrive-mobile

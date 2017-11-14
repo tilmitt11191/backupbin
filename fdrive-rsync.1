@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "mount `date +%Y%m%d%k%M`" >> /home/ffffe/fdrive-smb/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+
+mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/fdrive-work
+
+
+echo "fdrive-rsync start `date +%Y%m%d%k%M`" >> /home/ffffe/fdrive-smb/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+echo "fdrive-rsync start `date +%Y%m%d%k%M`" >> /mnt/fdrive-work/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+
+
+echo "fdrive-rsync finish `date +%Y%m%d%k%M`" >> /home/ffffe/fdrive-smb/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+echo "fdrive-rsync finish `date +%Y%m%d%k%M`" >> /mnt/fdrive-work/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+
+
+umount /mnt/fdrive-work
+echo "umount `date +%Y%m%d%k%M`" >> /home/ffffe/fdrive-smb/Dropbox/bin/backuptower/log/fdrive-rsync.txt

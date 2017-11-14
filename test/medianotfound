@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mount /dev/disk/by-id/wwn-0x908982483784060928x-part1 /mnt/fdrive-mobile
+if [ "$(ls -A /mnt/fdrive-mobile)" ]
+then
+	echo "exist"
+else
+	echo "not exist"
+	exit 1
+fi
+
+echo "aaa"

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+TARGET=$1
+if [ -z "$TARGET" ];then
+	echo "TARGET is EMPTY"
+	exit 2
+else
+:
+fi
+
+while ! checkreachable $TARGET;do
+:
+done
+
+exit 0

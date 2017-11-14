@@ -1,0 +1,19 @@
+#!/bin/bash
+
+TARGET=$1
+if [ -z "$TARGET" ];then
+	echo "TARGET is EMPTY"
+	exit 2
+else
+:
+fi
+
+GREP=`ping $TARGET -c 1 | grep 100` > /dev/null 2>&1
+
+if [ -z "$GREP" ];then
+	echo "$TARGET reachable"
+	exit 0
+else
+	echo "$TARGET NOT reachable"
+	exit 1
+fi

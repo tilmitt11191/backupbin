@@ -1,0 +1,25 @@
+#!/usr/bin/zsh
+
+BINDIR=/home/ffffe/bin
+SRCDIR=$BINDIR
+DSTDIR=/mnt/fdrive-work/Dropbox/pc/bin
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "fdrive-work not exist"
+        umount /mnt/fdrive-work
+        exit 1
+fi
+
+filelist=(`ls $SRCDIR`)
+
+for i in $filelist; do
+        echo "cp -r $SRCDIR/$i $DSTDIR/$i.backuptower"
+        cp -r $SRCDIR/$i $DSTDIR/$i.backuptower
+
+done
+
+exit 0

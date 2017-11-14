@@ -1,0 +1,13 @@
+#!/bin/sh
+
+TARGETDIR=home
+rsync -av /$TARGETDIR /mnt/fdrive-smb/etc/backup/nas >& /dev/null
+zip -r /mnt/fdrive-smb/etc/backup/$TARGETDIR.zip /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR >& /dev/null
+
+TARGETDIR=etc
+rsync -av /$TARGETDIR /mnt/fdrive-smb/etc/backup/nas >& /dev/null
+zip -r /mnt/fdrive-smb/etc/backup/$TARGETDIR.zip /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR >& /dev/null
+
+TARGETDIR=root
+rsync -av /$TARGETDIR /mnt/fdrive-smb/etc/backup/nas >& /dev/null
+zip -r /mnt/fdrive-smb/etc/backup/$TARGETDIR.zip /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR >& /dev/null

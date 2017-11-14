@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rsync -av /home /mnt/fdrive-smb/etc/backup/nas
+rsync -av /etc /mnt/fdrive-smb/etc/backup/nas
+zip /mnt/fdrive-smb/etc/backup/nas.zip /mnt/fdrive-smb/etc/backup/nas
+rm -rf /mnt/fdrive-smb/etc/backup/nas
+

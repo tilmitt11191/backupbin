@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#TIME=$(date "+%Y%m%d")
+TIME=$(date -d tomorrow "+%Y%m%d")
+#echo "$TIME 20:30"
+rtcwake -m disk -l -t $(date +%s -d "$TIME 6:00")
+exit 0

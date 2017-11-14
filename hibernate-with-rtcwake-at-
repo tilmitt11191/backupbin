@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#TIME=$(date "+%Y%m%d")
+TIME=$(date "+%Y%m%d")
+#echo "$TIME 20:30"
+rtcwake -m disk -l -t $(date +%s -d "$TIME $1")
+#pm-hibernate
+exit 0

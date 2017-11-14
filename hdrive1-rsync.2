@@ -1,0 +1,36 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+SMBLOGDIR=/mnt/fdrive-smb/Dropbox/bin/backuptower/log
+WORKLOGDIR=/mnt/fdrive-work/Dropbox/bin/backuptower/log
+
+bash $BINDIR/mount-fdrive
+
+echo "`date +%Y%m%d%k%M%S` mount" >> $WORKLOGDIR/hdrive1-rsync.txt
+mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/hdrive-work /mnt/hdrive1-work
+if [ "$(ls -A /mnt/hdrive1-smb)" ]
+then
+:
+else
+        echo "hdrive1-smb not exist" >> $WORKLOGDIR/hdrive1-rsync.txt
+	umount /mnt/fdrive-work
+        exit 1
+fi
+if [ "$(ls -A /mnt/hdrive1-work)" ]
+then
+:
+else
+        echo "hdrive-work not exist" >> $WORKLOGDIR/hdrive1-rsync.txt
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` hdrive1-rsync start" >> $WORKLOGDIR/hdrive1-rsync.txt
+rsync -av --delete /mnt/hdrive1-work/ /mnt/hdrive1-smb/ 2>> $WORKLOGDIR/hdrive1-rsync.txt
+chown ffffe:ffffe -R /mnt/hdrive1-smb 
+echo "`date +%Y%m%d%k%M%S` hdrive1-rsync finish" >> $WORKLOGDIR/hdrive1-rsync.txt
+
+umount /mnt/hdrive1-work
+echo "`date +%Y%m%d%k%M%S` umount" >> $WORKLOGDIR/hdrive1-rsync.txt
+umount /mnt/fdrive-work
+

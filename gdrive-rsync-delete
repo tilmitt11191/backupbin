@@ -1,0 +1,39 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+TARGETDRIVE=gdrive
+SMBLOGDIRFILE=/mnt/fdrive-smb/Dropbox/bin/backuptower/log/$TARGETDRIVE-rsync.txt
+ALLLOGDIRFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/$TARGETDRIVE-rsync.txt
+
+bash $BINDIR/mount-fdrive
+
+echo "`date +%Y%m%d%k%M%S` mount" >> $WORKLOGFILE
+mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/$TARGETDRIVE-work /mnt/$TARGETDRIVE-work
+if [ "$(ls -A /mnt/$TARGETDRIVE-smb)" ]
+then
+:
+else
+        echo "$TARGETDRIVE-smb not exist" >> $WORKLOGFILE
+	umount /mnt/fdrive-work
+        exit 1
+fi
+if [ "$(ls -A /mnt/$TARGETDRIVE-work)" ]
+then
+:
+else
+        echo "$TARGETDRIVE-work not exist" >> $WORKLOGFILE
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` $TARGETDRIVE-rsync start" >> $WORKLOGFILE
+rsync -av --delete /mnt/$TARGETDRIVE-work/ /mnt/$TARGETDRIVE-smb/ 2>> $WORKLOGFILE
+chown ffffe:ffffe -R /mnt/$TARGETDRIVE-smb 
+echo "`date +%Y%m%d%k%M%S` $TARGETDRIVE-rsync finish" >> $WORKLOGFILE
+echo "" >> $WORKLOGFILE
+
+umount /mnt/$TARGETDRIVE-work
+echo "`date +%Y%m%d%k%M%S` umount" >> $WORKLOGFILE
+umount /mnt/fdrive-work
+

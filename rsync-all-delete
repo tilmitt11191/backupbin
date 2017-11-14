@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+BINDIR=/home/ffffe/bin
+SRCDRIVE=fdrive-work
+DSTDRIVE=fdrive-smb
+ALLLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/rsync-all.txt
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo ""  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo ""  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "fdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WO
+        echo ""  | tee -a  $ALLLOGFILE $WORKLOGFILE
+RKLOGFILE
+        umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "--------rsync-all-delete start--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+
+bash $BINDIR/systemBackup-delete
+bash $BINDIR/fdrive-rsync-delete
+bash $BINDIR/fmobile-rsync-delete
+bash $BINDIR/gdrive-rsync-delete
+bash $BINDIR/hdrive-rsync-delete
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo ""  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "fdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WO
+        echo ""  | tee -a  $ALLLOGFILE $WORKLOGFILE
+RKLOGFILE
+        umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "--------rsync-all-delete finish--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+exit 0
+

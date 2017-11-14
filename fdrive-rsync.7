@@ -1,0 +1,62 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+SRCDRIVE=fdrive-work
+DSTDRIVE=fdrive-smb
+ALLLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/fdrive-rsync.txt
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "fdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "`date +%Y%m%d-%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        umount /mnt/fdrive-work
+        exit 1
+fi
+echo "--------$SRCDRIVE-rsync start--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+#echo "`date +%Y%m%d%k%M%S` mount $SRCDRIVE" | tee -a  $ALLLOGFILE $WORKLOGFILE
+#mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/$SRCDRIVE /mnt/$SRCDRIVE
+
+
+if [ "$(ls -A /mnt/$SRCDRIVE)" ]
+then
+:
+else
+        echo "$SRCDRIVE not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	echo "`date +%Y%m%d-%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+
+if [ "$(ls -A /mnt/$DSTDRIVE)" ]
+then
+:
+else
+        echo "$DSTDRIVE not exist" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	echo "`date +%Y%m%d-%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/$SRCDRIVE
+        exit 1
+fi
+
+
+echo "`date +%Y%m%d-%k%M%S` rsync from backup to etc/backup start"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	mv /mnt/fdrive-work/etc/backup/mba /mnt/hdrive-smb/etc/backup/"`date +%Y%m%d-%k%M%S`mba"
+	rsync -av --exclude='._*' --exclude='*競合コ*' --exclude='.DS_STORE' /mnt/fdrive-smb/etc/backup/mba/ /mnt/fdrive-work/etc/backup/mba 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+	rsync -av --exclude='._*' --exclude='*競合コ*' --exclude='.DS_STORE' /mnt/fdrive-smb/etc/backup/nas/*.zip /mnt/fdrive-work/etc/backup/nas 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "`date +%Y%m%d-%k%M%S` rsync from $SRCDRIVE to $DSTDRIVE start"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	rsync -av --exclude='._*' --exclude='*競合コ*' --exclude='.DS_STORE' --exclude='/mnt/fdrive-work/etc/backup/mba' --exclude='/mnt/fdrive-work/etc/backup/nas' --exclude='/mnt/fdrive-work/etc/backup/old' /mnt/$SRCDRIVE/ /mnt/$DSTDRIVE/ 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+chown ffffe:ffffe -R /mnt/$DSTDRIVE
+echo "`date +%Y%m%d-%k%M%S` rsync finish"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+#umount /mnt/$SRCDRIVE
+#echo "`date +%Y%m%d%k%M%S` umount $SRCDRIVE"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "`date +%Y%m%d-%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "--------$SRCDRIVE-rsync finish--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+exit 0

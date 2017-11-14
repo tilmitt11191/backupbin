@@ -1,0 +1,36 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+SRCDRIVE=hdrive-smb
+DSTDRIVE=hdrive-work
+ALLLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/hdrive-rsync.txt
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "hdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "`date +%Y%m%d-%H%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        umount /mnt/fdrive-work
+        exit 1
+fi
+echo "--------$SRCDRIVE-rsync start--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+echo "`date +%Y%m%d%H%M%S` mount $DSTDRIVE" | tee -a  $ALLLOGFILE $WORKLOGFILE
+mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/$DSTDRIVE /mnt/$DSTDRIVE
+
+echo "`date +%Y%m%d-%H%M%S` rsync from $SRCDRIVE to $DSTDRIVE start"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	#sudo -u ffffe rsync -av --delete --exclude='._*' --exclude='.DS_STORE' --exclude='/mnt/fdrive-work/etc/backup/mba' --exclude='/mnt/fdrive-work/etc/backup/nas' --exclude='/mnt/fdrive-work/etc/backup/old' /mnt/$SRCDRIVE/ /mnt/$DSTDRIVE/ 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+	sudo -u ffffe rsync -av --delete --exclude='._*' --exclude='.DS_STORE' --exclude='/mnt/fdrive-work/etc/backup/mba' --exclude='/mnt/fdrive-work/etc/backup/nas' --exclude='/mnt/fdrive-work/etc/backup/old' /mnt/$SRCDRIVE/ /mnt/$DSTDRIVE/ 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+#chown ffffe:ffffe -R /mnt/$DSTDRIVE
+echo "`date +%Y%m%d-%H%M%S` rsync finish"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+umount /mnt/$SRCDRIVE
+echo "`date +%Y%m%d%H%M%S` umount $SRCDRIVE"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "`date +%Y%m%d-%H%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "--------$SRCDRIVE-rsync finish--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "" | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+exit 0

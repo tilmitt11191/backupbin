@@ -1,0 +1,51 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+TARGETDRIVE=fdrive
+SMBLOGFILE=/mnt/fdrive-smb/Dropbox/bin/backuptower/log/$TARGETDRIVE-rsync.txt
+ALLLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/$TARGETDRIVE-rsync.txt
+
+bash $BINDIR/mount-fdrive | tee -a  $ALLLOGFILE $WORKLOGFILE
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "fdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        umount /mnt/fdrive-work
+        echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        exit 1
+fi
+
+
+
+echo "`date +%Y%m%d%k%M%S` mount $TARGETDRIVE-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+if [ "$(ls -A /mnt/$TARGETDRIVE-work)" ]
+then
+:
+else
+        echo "$TARGETDRIVE-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/fdrive-work
+	echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        exit 1
+fi
+if [ "$(ls -A /mnt/$TARGETDRIVE-smb)" ]
+then
+:
+else
+        echo "$TARGETDRIVE-smb not exist" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/$TARGETDRIVE-work
+	echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` $TARGETDRIVE-rsync start"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	rsync -av --delete /mnt/$TARGETDRIVE-work/ /mnt/$TARGETDRIVE-smb/ 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+chown ffffe:ffffe -R /mnt/$TARGETDRIVE-smb
+echo "`date +%Y%m%d%k%M%S` $TARGETDRIVE-rsync finish"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+echo "`date +%Y%m%d%k%M%S` umount $TARGETDRIVE-work"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+echo "`date +%Y%m%d%k%M%S` umount fdrove-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+exit 0

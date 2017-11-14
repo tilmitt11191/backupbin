@@ -1,0 +1,35 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+SMBLOGDIR=/mnt/fdrive-smb/Dropbox/bin/backuptower/log
+WORKLOGDIR=/mnt/fdrive-work/Dropbox/bin/backuptower/log
+
+bash $BINDIR/mount-fdrive
+
+echo "`date +%Y%m%d%k%M%S` mount" >> $WORKLOGDIR/fdrive-rsync.txt
+
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "fdrive-work not exist" >> $WORKLOGDIR/fdrive-rsync.txt
+	umount /mnt/fdrive-work
+        exit 1
+fi
+if [ "$(ls -A /mnt/fdrive-smb)" ]
+then
+:
+else
+        echo "fdrive-smb not exist" >> $WORKLOGDIR/fdrive-rsync.txt
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` fdrive-rsync start" >> $WORKLOGDIR/fdrive-rsync.txt
+rsync -av --delete /mnt/fdrive-work/ /mnt/fdrive-smb/ 2>> $WORKLOGDIR/fdrive-rsync.txt
+chown ffffe:ffffe -R /mnt/fdrive-smb 
+echo "`date +%Y%m%d%k%M%S` fdrive-rsync finish" >> $WORKLOGDIR/fdrive-rsync.txt
+
+echo "`date +%Y%m%d%k%M%S` umount" >> $WORKLOGDIR/fdrive-rsync.txt
+umount /mnt/fdrive-work
+

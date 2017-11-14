@@ -1,0 +1,10 @@
+#!/bin/bash
+
+TARGETDIR=home
+zip -ry /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR.zip /$TARGETDIR
+
+TARGETDIR=etc
+zip -ry /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR.zip /$TARGETDIR
+
+TARGETDIR=root
+zip -ry /mnt/fdrive-smb/etc/backup/nas/$TARGETDIR.zip /$TARGETDIR

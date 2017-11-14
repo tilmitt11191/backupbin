@@ -1,0 +1,12 @@
+
+date=`date +%Y%m%d-%H%M%S`
+SRCDIR=/mnt/fdrive-smb/etc/backups/mba
+BASEDIR=/mnt/hdrive-smb/etc/backups/mba
+
+mkdir $BASEDIR/$date
+cd $SRCDIR
+tar cf - ./macos_98fe944153b4.sparsebundle/ | tar xvf - -C $BASEDIR/$date/
+exit 0
+
+#resore
+#tar cf - . | (cd /mnt/fdrive-smb/etc/backup/mba/; tar xvf -)

@@ -1,0 +1,22 @@
+#!/usr/bin/zsh
+
+HOMEDIR=/home/ffffe
+TARGETDIR=/media/ffffe/san128/Dropbox/pc/ubuntu128/home
+
+#reset target
+rm -rf $TARGETDIR
+mkdir -p $TARGETDIR
+
+filelist=(\
+".zshenv" \
+".zshrc" \
+"bin" \
+".dotfiles" \
+)
+
+for i in $filelist;do
+	cp -rf $HOMEDIR/$i $TARGETDIR/
+	echo "cp -rf $HOMEDIR/$i $TARGETDIR/"
+done
+
+exit 0

@@ -1,0 +1,1 @@
+autossh -f -i ~/.ssh/id_rsa takashiozu@takashiozu.com -R 24241:192.168.24.24:22

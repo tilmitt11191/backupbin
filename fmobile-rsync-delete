@@ -1,0 +1,60 @@
+#!/bin/bash
+
+BINDIR=/home/ffffe/bin
+SRCDRIVE=fdrive-smb
+DSTDRIVE=fdrive-mobile
+ALLLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/all-rsync.txt
+WORKLOGFILE=/mnt/fdrive-work/Dropbox/bin/backuptower/log/fmobile-rsync.txt
+
+bash $BINDIR/mount-fdrive
+if [ "$(ls -A /mnt/fdrive-work)" ]
+then
+:
+else
+        echo "fdrive-work not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+        echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+        umount /mnt/fdrive-work
+        exit 1
+fi
+echo "--------$DSTDRIVE-rsync start--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+#echo "`date +%Y%m%d%k%M%S` mount $SRCDRIVE" | tee -a  $ALLLOGFILE $WORKLOGFILE
+#mount -t cifs -o credentials=/etc/samba/sambapasswdworkingtower //pc/$SRCDRIVE /mnt/$SRCDRIVE
+
+
+if [ "$(ls -A /mnt/$SRCDRIVE)" ]
+then
+:
+else
+        echo "$SRCDRIVE not exist"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+echo "`date +%Y%m%d%k%M%S` mount $DSTDRIVE" | tee -a  $ALLLOGFILE $WORKLOGFILE
+mount /dev/disk/by-id/wwn-0x908982483784060928x-part1 /mnt/fdrive-mobile
+if [ "$(ls -A /mnt/$DSTDRIVE)" ]
+then
+:
+else
+        echo "$DSTDRIVE not exist" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/$SRCDRIVE
+	echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+	umount /mnt/fdrive-work
+        exit 1
+fi
+
+
+echo "`date +%Y%m%d%k%M%S` rsync from $SRCDRIVE to $DSTDRIVE start"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+	rsync -av --delete /mnt/$SRCDRIVE/ /mnt/$DSTDRIVE/ 2>&1 >/dev/null | tee -a  $ALLLOGFILE $WORKLOGFILE
+chown ffffe:ffffe -R /mnt/$DSTDRIVE
+echo "`date +%Y%m%d%k%M%S` rsync finish"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+
+
+#umount /mnt/$SRCDRIVE
+#echo "`date +%Y%m%d%k%M%S` umount $SRCDRIVE"  | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "`date +%Y%m%d%k%M%S` umount fdrive-work" | tee -a  $ALLLOGFILE $WORKLOGFILE
+echo "--------$DSTDRIVE-rsync finish--------" | tee -a  $ALLLOGFILE $WORKLOGFILE
+umount /mnt/fdrive-work
+exit 0
